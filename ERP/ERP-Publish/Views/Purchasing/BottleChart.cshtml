@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "BottleChart";
+}
+@if (Request.IsAuthenticated)
+{
+    @Html.Partial("_PurchasingPartial")
+    <head>
+        <link rel="stylesheet" type="text/css" href="~/Content/Site.css">
+
+        <script type="text/javascript" src="~/Scripts/jquery-3.1.1.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".tt").each(function () {
+                    var t = $(this).text().replace(',', '.');
+                    $(this).text(t);
+                })});
+            function myFunction() {
+                // Declare variables 
+                var input, filter, table, tr, td, i;
+                input = document.getElementById("inputSearch");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("table1");
+                tr = table.getElementsByTagName("tr");
+
+                // Loop through all table rows, and hide those who don't match the search query
+                for (i = 0; i < tr.length; i++) {
+                    td1 = tr[i].getElementsByTagName("td")[1];
+                    td2 = tr[i].getElementsByTagName("td")[2];
+                    if (td1 || td2) {
+                        if (td1.innerHTML.toUpperCase().indexOf(filter) > -1 || td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    } 
+                }
+                document.getElementById("searchIdT").innerHTML = "Total Pages:1 Records:" + parseInt($('tr:visible').length - 1);
+                document.getElementById("searchIdB").innerHTML = "Total Pages:1 Records:" + parseInt($('tr:visible').length - 1);
+            }
+            var numOfVisibleRows = $('tr').filter(function () {
+                return $(this).css('display') === '';
+            }).length;
+        </script>
+    </head>
+    <aside style="margin-top:10px">
+        <div class="panel" @*style="border:1px solid"*@>
+            <div style="margin-left: 20px">
+                <h4>Purchasing > Bottle Chart</h4>
+                <button style="max-width:90px" class="btn btn-success" onclick="location.href='@Url.Action("Add", "Purchasing", new { param = "BottleAdd" })'">Add</button>
+                <button style="max-width:90px" class="btn btn-success" onclick="location.href='@Url.Action("ExportBottle", "Purchasing")'">Export</button>
+                <button style="max-width:90px" class="btn btn-success" onclick="location.href='@Url.Action("ImportBottle", "Purchasing")'">Import</button>
+                <input class="search" type="text" name="search" id="inputSearch" onkeyup="myFunction()" placeholder="Search.." />
+                <p id="searchIdT" style="text-align:right; font-size:14px">Total Pages:1 Records:@ViewBag.Bottles.Count</p>
+            </div>
+            <table class="table" id="table1">
+                <thead>
+                    <tr style="font-size:14px">
+                        <th id="hiddingEls">Item Key</th>
+                        <th id="hiddingElm">Description</th>
+                        <th>Small Tray</th>
+                        <th id="hiddingEll">Changed Date</th>
+                        <th id="hiddingEls">Bottle Cubic Inches</th>
+                        <th>View</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in ViewBag.Bottles)
+                {
+                        <tr style="font-size:14px">
+                            <td id="hiddingEls">@item.BottleItemKey</td>
+                            <td id="hiddingElm">@item.BottleDescription</td>
+                            <td>@item.BottlesSmallTray</td>
+                            <td id="hiddingEll">@item.BottleChangedDate.ToString("MM'/'dd'/'yyyy")</td>
+                            <td id="hiddingEls" class="tt">@item.BottleCubicInches</td>
+                            <td>@Html.ActionLink("View", "BottleView", "Purchasing", new { bottleId = item.BottleId.ToString() }, null)</td>
+                            <td>@Html.ActionLink("Edit", "BottleEdit", "Purchasing", new { bottleId = item.BottleId.ToString() }, null)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </aside>
+    <footer>
+        <p id="searchIdB" style="text-align:center; font-size:14px">Total Pages:1 Records:@ViewBag.Bottles.Count</p>
+    </footer>
+}
